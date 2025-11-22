@@ -32,13 +32,19 @@ function App() {
   };
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-dark-bg flex">
+    <div className="w-screen h-screen overflow-hidden flex" style={{
+      background: 'linear-gradient(135deg, #0f1419 0%, #1a1f2e 25%, #141a28 50%, #1a1f2e 75%, #0f1419 100%)'
+    }}>
       {/* Animated background gradients */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-neon-purple/10 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-neon-cyan/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }} />
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-neon-pink/5 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-0 w-96 h-96 bg-neon-purple/20 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-neon-cyan/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }} />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-neon-pink/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-neon-green/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '1.5s' }} />
       </div>
+
+      {/* Subtle grid overlay */}
+      <div className="absolute inset-0 bg-grid opacity-30 pointer-events-none" />
 
       {/* Main layout */}
       <div className="relative z-10 w-full h-full flex">

@@ -4,15 +4,20 @@
 
 @layer base {
   body {
-    @apply bg-dark-bg text-white antialiased;
     margin: 0;
     padding: 0;
     overflow: hidden;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 50%, #0a0e1a 100%);
+    color: white;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   #root {
-    @apply w-screen h-screen overflow-hidden;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
   }
 }
 
