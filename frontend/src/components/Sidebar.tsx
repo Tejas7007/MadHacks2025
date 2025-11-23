@@ -17,7 +17,7 @@ export function Sidebar({ sessions, activeSessionId, onSessionSelect, onNewChat 
     <motion.div
       initial={false}
       animate={{ width: isCollapsed ? 60 : 280 }}
-      className="relative h-full glass-panel border-r border-white/10 flex flex-col"
+      className="relative h-full glass-panel border-r border-white/10 flex flex-col z-20 pointer-events-auto"
     >
       {/* Header */}
       <div className="p-4 border-b border-white/10">

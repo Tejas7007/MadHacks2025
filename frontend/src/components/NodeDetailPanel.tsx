@@ -27,7 +27,7 @@ export function NodeDetailPanel({ node, onClose }: NodeDetailPanelProps) {
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: 400, opacity: 0 }}
           transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-          className="absolute right-0 top-0 bottom-0 w-96 glass-panel border-l border-white/10 flex flex-col z-50"
+          className="absolute right-0 top-0 bottom-0 w-96 glass-panel border-l border-white/10 flex flex-col z-50 pointer-events-auto"
         >
           {/* Header */}
           <div className="p-6 border-b border-white/10 flex items-start justify-between">

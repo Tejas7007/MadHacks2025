@@ -24,10 +24,11 @@ export function ThinkingGlobe({
   onNodeHover,
 }: ThinkingGlobeProps) {
   return (
-    <div className="w-full h-full relative">
+    <div className="absolute inset-0 pointer-events-none">
       <Canvas
         camera={{ position: [0, 0, 15], fov: 50 }}
         gl={{ antialias: true, alpha: true }}
+        style={{ pointerEvents: 'auto' }}
       >
         <color attach="background" args={['#050810']} />
         <ambientLight intensity={0.3} />

@@ -25,11 +25,11 @@ export function InputBar({ onSubmit, isGenerating }: InputBarProps) {
   };
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 p-6">
+    <div className="absolute bottom-0 left-0 right-0 p-6 z-20 pointer-events-none">
       <motion.div
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="max-w-4xl mx-auto"
+        className="max-w-4xl mx-auto pointer-events-auto"
       >
         <div className="glass-panel rounded-2xl shadow-2xl p-4">
           <div className="flex items-end gap-4">
