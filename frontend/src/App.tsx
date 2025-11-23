@@ -10,6 +10,7 @@ import type {
   Connection,
   ViewMode,
   ClusteringMode,
+  AnswerStep,
 } from './types';
 
 function App() {
@@ -32,14 +33,17 @@ function App() {
         isGenerating: false,
         currentStep: 0,
         totalSteps: 0,
+        steps: [],
       },
       nodes: [],
       connections: [],
+      status: 'idle',
     };
     setSessions([newSession, ...sessions]);
     setActiveSessionId(newSession.id);
     setViewMode('idle');
     setSelectedNode(null);
+    setClusteringMode('none');
   };
 
   const handleSubmitQuestion = async (question: string) => {
@@ -56,22 +60,27 @@ function App() {
               ...s,
               question,
               title: question.slice(0, 50) + (question.length > 50 ? '...' : ''),
+              status: 'loading' as const,
             }
           : s
       )
     );
 
-    // Simulate AI thinking
-    setViewMode('thinking');
+    // Start AI thinking animation
+    setViewMode('zooming');
+    setTimeout(() => setViewMode('thinking'), 500);
+
     await simulateAIThinking(question);
   };
 
   const simulateAIThinking = async (question: string) => {
-    // Generate mock nodes in 3D space around the center
+    // Generate mock nodes in 3D space
     const numNodes = 8 + Math.floor(Math.random() * 5);
     const nodes: KnowledgeNode[] = [];
     const connections: Connection[] = [];
+    const steps: AnswerStep[] = [];
 
+    // Generate nodes
     for (let i = 0; i < numNodes; i++) {
       const theta = (i / numNodes) * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
@@ -82,17 +91,25 @@ function App() {
       const z = radius * Math.cos(phi);
 
       const tier = i < 3 ? 1 : i < 6 ? 2 : 3;
+      const roles: Array<'principle' | 'fact' | 'example' | 'analogy'> = [
+        'principle',
+        'fact',
+        'example',
+        'analogy',
+      ];
+      const role = roles[i % roles.length];
 
       nodes.push({
         id: `node-${i}`,
         position: [x, y, z],
-        title: `Source ${i + 1}: ${getRandomSource()}`,
+        title: `${getRandomSource()} - ${role}`,
         sourceUrl: `https://example.com/source-${i + 1}`,
         chunkText: getRandomChunkText(),
         whyUsed: getRandomWhyUsed(),
         isActive: false,
         tier,
-        role: getRandomRole(),
+        role,
+        relevanceScore: 0.6 + Math.random() * 0.4,
       });
 
       // Connect to answer core (center)
@@ -102,6 +119,7 @@ function App() {
           to: 'answer-core',
           strength: Math.random() * 0.5 + 0.5,
           isActive: false,
+          type: 'support',
         });
       }
 
@@ -112,9 +130,45 @@ function App() {
           to: `node-${Math.floor(Math.random() * i)}`,
           strength: Math.random() * 0.3 + 0.2,
           isActive: false,
+          type: 'explain',
         });
       }
     }
+
+    // Generate answer steps
+    const answerParts = getAnswerParts(question);
+    answerParts.forEach((text, index) => {
+      const contributingNodes = nodes
+        .slice(index * 2, (index + 1) * 2)
+        .map((n) => n.id);
+
+      steps.push({
+        id: `step-${index}`,
+        text,
+        contributingNodeIds: contributingNodes,
+        order: index,
+      });
+    });
+
+    // Update status to generating
+    setSessions((prev) =>
+      prev.map((s) =>
+        s.id === activeSessionId
+          ? {
+              ...s,
+              status: 'generating' as const,
+              answer: {
+                ...s.answer,
+                isGenerating: true,
+                totalSteps: nodes.length,
+                steps,
+              },
+            }
+          : s
+      )
+    );
+
+    setViewMode('generating');
 
     // Animate nodes appearing one by one
     for (let i = 0; i < nodes.length; i++) {
@@ -129,18 +183,21 @@ function App() {
                 connections: connections.filter((c) =>
                   nodes.slice(0, i + 1).some((n) => n.id === c.from)
                 ),
+                answer: {
+                  ...s.answer,
+                  currentStep: i + 1,
+                },
               }
             : s
         )
       );
     }
 
-    // Simulate answer generation with step-by-step activation
-    const answer = getRandomAnswer(question);
-    const steps = nodes.length;
-
-    for (let step = 0; step <= steps; step++) {
+    // Activate nodes step by step
+    for (let step = 0; step <= steps.length; step++) {
       await sleep(500);
+
+      const fullAnswer = steps.slice(0, step).map(s => s.text).join(' ');
 
       setSessions((prev) =>
         prev.map((s) =>
@@ -148,24 +205,36 @@ function App() {
             ? {
                 ...s,
                 answer: {
-                  text: step === steps ? answer : 'Analyzing sources...',
-                  isGenerating: step < steps,
+                  ...s.answer,
+                  text: fullAnswer || 'Analyzing sources...',
+                  isGenerating: step < steps.length,
                   currentStep: step,
-                  totalSteps: steps,
                 },
                 nodes: s.nodes.map((n, i) => ({
                   ...n,
-                  isActive: i < step,
+                  isActive: i < step * 2,
                 })),
                 connections: s.connections.map((c) => ({
                   ...c,
-                  isActive: step > steps / 2,
+                  isActive: step > steps.length / 2,
                 })),
               }
             : s
         )
       );
     }
+
+    // Finalize
+    setSessions((prev) =>
+      prev.map((s) =>
+        s.id === activeSessionId
+          ? {
+              ...s,
+              status: 'complete' as const,
+            }
+          : s
+      )
+    );
 
     setViewMode('exploring');
   };
@@ -178,7 +247,7 @@ function App() {
   }, []);
 
   return (
-    <div className="w-screen h-screen bg-cyber-darker overflow-hidden flex">
+    <div className="w-screen h-screen bg-space-900 overflow-hidden flex">
       {/* Sidebar */}
       <Sidebar
         sessions={sessions}
@@ -189,8 +258,9 @@ function App() {
 
       {/* Main Content */}
       <div className="flex-1 relative">
-        {/* Background Grid */}
-        <div className="absolute inset-0 bg-grid opacity-50" />
+        {/* Background Effects */}
+        <div className="absolute inset-0 bg-grid opacity-30" />
+        <div className="absolute inset-0 bg-radial-glow opacity-20" />
 
         {/* 3D Globe */}
         <ThinkingGlobe
@@ -204,10 +274,12 @@ function App() {
         />
 
         {/* Controls Panel */}
-        <ControlsPanel
-          clusteringMode={clusteringMode}
-          onClusteringModeChange={setClusteringMode}
-        />
+        {viewMode !== 'idle' && (
+          <ControlsPanel
+            clusteringMode={clusteringMode}
+            onClusteringModeChange={setClusteringMode}
+          />
+        )}
 
         {/* Input Bar */}
         <InputBar
@@ -216,7 +288,9 @@ function App() {
         />
 
         {/* Node Detail Panel */}
-        <NodeDetailPanel node={selectedNode} onClose={() => setSelectedNode(null)} />
+        {selectedNode && (
+          <NodeDetailPanel node={selectedNode} onClose={() => setSelectedNode(null)} />
+        )}
       </div>
     </div>
   );
@@ -228,16 +302,16 @@ function sleep(ms: number) {
 }
 
 const sources = [
-  'Quantum Computing Principles',
-  'Neural Network Architecture',
-  'Machine Learning Fundamentals',
-  'Deep Learning Research',
-  'AI Ethics Guidelines',
-  'Data Science Methods',
-  'Computer Vision Techniques',
-  'Natural Language Processing',
-  'Reinforcement Learning',
-  'Transformer Models',
+  'Physics Principles',
+  'Orbital Mechanics',
+  'Gravitational Theory',
+  'Satellite Engineering',
+  'Space Technology',
+  'Aerospace Research',
+  'Newtonian Laws',
+  'Celestial Mechanics',
+  'Space Science',
+  'Astrophysics Fundamentals',
 ];
 
 function getRandomSource() {
@@ -250,6 +324,7 @@ function getRandomChunkText() {
     'Research shows that this approach has been validated through multiple studies and practical applications. The evidence suggests strong correlation with theoretical frameworks.',
     'The implementation details outlined here demonstrate practical applications of the concept. These methods have been tested and refined over multiple iterations.',
     'Historical context reveals the evolution of this idea and its impact on current practices. Understanding this background is crucial for proper application.',
+    'Key principles demonstrate how fundamental forces and dynamics govern behavior in this domain. Mathematical models support these observations with quantitative precision.',
   ];
   return texts[Math.floor(Math.random() * texts.length)];
 }
@@ -261,26 +336,19 @@ function getRandomWhyUsed() {
     'Presents practical examples and applications',
     'Gives historical perspective and background',
     'Explains core principles and methodologies',
+    'Demonstrates real-world implementation',
   ];
   return reasons[Math.floor(Math.random() * reasons.length)];
 }
 
-function getRandomRole(): 'principle' | 'fact' | 'example' | 'analogy' {
-  const roles: Array<'principle' | 'fact' | 'example' | 'analogy'> = [
-    'principle',
-    'fact',
-    'example',
-    'analogy',
+function getAnswerParts(_question: string): string[] {
+  return [
+    `To answer your question, we need to understand several interconnected concepts.`,
+    'The fundamental principle involves a balance of forces and energy.',
+    'Key factors include velocity, altitude, and gravitational pull.',
+    'These elements work together in a precisely calculated equilibrium.',
+    'The result is a stable configuration that can be maintained over time.',
   ];
-  return roles[Math.floor(Math.random() * roles.length)];
-}
-
-function getRandomAnswer(question: string) {
-  return `Based on the analysis of multiple sources, here's a comprehensive answer to "${question}":
-
-The key insight is that this topic involves multiple interconnected concepts that build upon each other. The sources reveal a pattern of progressive understanding, where foundational principles support more advanced applications.
-
-The evidence suggests that a multi-faceted approach, combining theoretical frameworks with practical implementations, yields the most robust results. This is supported by research across different domains and validated through empirical studies.`;
 }
 
 export default App;

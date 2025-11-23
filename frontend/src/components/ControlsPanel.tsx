@@ -1,5 +1,4 @@
-import { motion } from 'framer-motion';
-import { Layers, Target, Info } from 'lucide-react';
+import { Layers, Target, Info, Circle } from 'lucide-react';
 import type { ClusteringMode } from '../types';
 
 interface ControlsPanelProps {
@@ -12,68 +11,99 @@ export function ControlsPanel({
   onClusteringModeChange,
 }: ControlsPanelProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="absolute top-6 right-6 glass-panel rounded-xl p-3 space-y-2 z-10"
-    >
-      <div className="flex items-center gap-2 mb-3">
-        <Layers className="w-4 h-4 text-cyber-blue" />
-        <span className="text-sm font-medium">Visualization</span>
+    <div className="absolute top-6 right-6 glass-strong rounded-xl p-4 min-w-[280px] z-10 fade-in shadow-neon-blue/10">
+      <div className="flex items-center gap-2 mb-4">
+        <div className="w-8 h-8 rounded-lg bg-cyber-blue/10 flex items-center justify-center">
+          <Layers className="w-4 h-4 text-cyber-blue" />
+        </div>
+        <span className="text-sm font-semibold text-white">Visualization Mode</span>
       </div>
 
-      <div className="space-y-1">
+      <div className="space-y-2">
         <button
           onClick={() => onClusteringModeChange('none')}
-          className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all ${
+          className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all duration-200 ${
             clusteringMode === 'none'
-              ? 'bg-cyber-blue/20 text-cyber-blue border border-cyber-blue/50'
-              : 'hover:bg-white/5 text-white/70'
+              ? 'bg-cyber-blue/20 text-cyber-blue border border-cyber-blue/50 shadow-neon-blue/20'
+              : 'hover:bg-white/5 text-white/70 hover:text-white border border-transparent'
           }`}
         >
           <Target className="w-4 h-4" />
-          <span>Default</span>
+          <span className="font-medium">Default View</span>
         </button>
 
         <button
           onClick={() => onClusteringModeChange('tiers')}
-          className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all ${
+          className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all duration-200 ${
             clusteringMode === 'tiers'
-              ? 'bg-cyber-blue/20 text-cyber-blue border border-cyber-blue/50'
-              : 'hover:bg-white/5 text-white/70'
+              ? 'bg-cyber-blue/20 text-cyber-blue border border-cyber-blue/50 shadow-neon-blue/20'
+              : 'hover:bg-white/5 text-white/70 hover:text-white border border-transparent'
           }`}
         >
           <Layers className="w-4 h-4" />
-          <span>Tier Clustering</span>
+          <span className="font-medium">Tier Clustering</span>
+        </button>
+
+        <button
+          onClick={() => onClusteringModeChange('roles')}
+          className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all duration-200 ${
+            clusteringMode === 'roles'
+              ? 'bg-cyber-blue/20 text-cyber-blue border border-cyber-blue/50 shadow-neon-blue/20'
+              : 'hover:bg-white/5 text-white/70 hover:text-white border border-transparent'
+          }`}
+        >
+          <Circle className="w-4 h-4" />
+          <span className="font-medium">Role Clustering</span>
         </button>
       </div>
 
-      {clusteringMode === 'tiers' && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          exit={{ opacity: 0, height: 0 }}
-          className="mt-3 pt-3 border-t border-white/10"
-        >
-          <div className="flex items-start gap-2 text-xs text-white/60">
-            <Info className="w-3 h-3 mt-0.5 flex-shrink-0" />
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <div className="w-2 h-2 rounded-full bg-cyber-green" />
-                <span>Tier 1: Direct support</span>
-              </div>
-              <div className="flex items-center gap-2 mb-1">
-                <div className="w-2 h-2 rounded-full bg-cyber-blue" />
-                <span>Tier 2: Supporting sources</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-cyber-purple" />
-                <span>Tier 3+: Background context</span>
-              </div>
-            </div>
+      {/* Legend */}
+      {clusteringMode !== 'none' && (
+        <div className="mt-4 pt-4 border-t border-white/10">
+          <div className="flex items-center gap-2 mb-3">
+            <Info className="w-3.5 h-3.5 text-white/40" />
+            <span className="text-xs font-semibold text-white/60 uppercase tracking-wider">Legend</span>
           </div>
-        </motion.div>
+          <div className="space-y-2">
+            {clusteringMode === 'tiers' && (
+              <>
+                <div className="flex items-center gap-3 text-xs">
+                  <div className="w-3 h-3 rounded-full bg-tier-1 shadow-neon-green" />
+                  <span className="text-white/70">Tier 1: Direct connections</span>
+                </div>
+                <div className="flex items-center gap-3 text-xs">
+                  <div className="w-3 h-3 rounded-full bg-tier-2 shadow-neon-blue" />
+                  <span className="text-white/70">Tier 2: Supporting sources</span>
+                </div>
+                <div className="flex items-center gap-3 text-xs">
+                  <div className="w-3 h-3 rounded-full bg-tier-3 shadow-neon-purple" />
+                  <span className="text-white/70">Tier 3+: Background context</span>
+                </div>
+              </>
+            )}
+            {clusteringMode === 'roles' && (
+              <>
+                <div className="flex items-center gap-3 text-xs">
+                  <div className="w-3 h-3 rounded-full bg-role-principle" />
+                  <span className="text-white/70">Principle: Core concepts</span>
+                </div>
+                <div className="flex items-center gap-3 text-xs">
+                  <div className="w-3 h-3 rounded-full bg-role-fact" />
+                  <span className="text-white/70">Fact: Supporting evidence</span>
+                </div>
+                <div className="flex items-center gap-3 text-xs">
+                  <div className="w-3 h-3 rounded-full bg-role-example" />
+                  <span className="text-white/70">Example: Practical cases</span>
+                </div>
+                <div className="flex items-center gap-3 text-xs">
+                  <div className="w-3 h-3 rounded-full bg-role-analogy" />
+                  <span className="text-white/70">Analogy: Comparisons</span>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
       )}
-    </motion.div>
+    </div>
   );
 }
