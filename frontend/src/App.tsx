@@ -188,9 +188,9 @@ function App() {
       />
 
       {/* Main Content */}
-      <div className="flex-1 relative">
+      <div className="flex-1 relative h-full overflow-hidden">
         {/* Background Grid */}
-        <div className="absolute inset-0 bg-grid opacity-50" />
+        <div className="absolute inset-0 bg-grid opacity-50 pointer-events-none" />
 
         {/* 3D Globe */}
         <ThinkingGlobe
