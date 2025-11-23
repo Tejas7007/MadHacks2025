@@ -188,12 +188,12 @@ function App() {
       />
 
       {/* Main Content Area */}
-      <div className="flex-1 relative flex flex-col overflow-hidden">
-        {/* Background Grid - Full viewport behind everything */}
+      <div className="flex-1 relative overflow-hidden">
+        {/* Background Grid - Behind everything */}
         <div className="absolute inset-0 bg-grid opacity-50 pointer-events-none z-0" />
 
         {/* 3D Globe Canvas - Takes full space */}
-        <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 z-10">
           <ThinkingGlobe
             nodes={activeSession?.nodes || []}
             connections={activeSession?.connections || []}
@@ -205,7 +205,7 @@ function App() {
           />
         </div>
 
-        {/* UI Overlays */}
+        {/* UI Overlays - Above canvas */}
         <ControlsPanel
           clusteringMode={clusteringMode}
           onClusteringModeChange={setClusteringMode}
