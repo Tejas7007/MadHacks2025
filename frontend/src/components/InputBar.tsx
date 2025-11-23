@@ -25,7 +25,7 @@ export function InputBar({ onSubmit, isGenerating }: InputBarProps) {
   };
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 p-6 z-20 pointer-events-none">
+    <div className="absolute bottom-0 left-0 right-0 p-6 z-30 pointer-events-none">
       <motion.div
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}

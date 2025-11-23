@@ -15,7 +15,7 @@ export function ControlsPanel({
     <motion.div
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="absolute top-6 right-6 glass-panel rounded-xl p-3 space-y-2 z-20 pointer-events-auto"
+      className="absolute top-6 right-6 glass-panel rounded-xl p-3 space-y-2 z-30 pointer-events-auto"
     >
       <div className="flex items-center gap-2 mb-3">
         <Layers className="w-4 h-4 text-cyber-blue" />

@@ -178,7 +178,7 @@ function App() {
   }, []);
 
   return (
-    <div className="w-screen h-screen bg-cyber-darker overflow-hidden flex">
+    <div className="flex h-screen w-screen bg-cyber-darker overflow-hidden">
       {/* Sidebar */}
       <Sidebar
         sessions={sessions}
@@ -187,35 +187,35 @@ function App() {
         onNewChat={handleNewChat}
       />
 
-      {/* Main Content */}
-      <div className="flex-1 relative h-full overflow-hidden">
-        {/* Background Grid */}
-        <div className="absolute inset-0 bg-grid opacity-50 pointer-events-none" />
+      {/* Main Content Area */}
+      <div className="flex-1 relative flex flex-col overflow-hidden">
+        {/* Background Grid - Full viewport behind everything */}
+        <div className="absolute inset-0 bg-grid opacity-50 pointer-events-none z-0" />
 
-        {/* 3D Globe */}
-        <ThinkingGlobe
-          nodes={activeSession?.nodes || []}
-          connections={activeSession?.connections || []}
-          answerCore={activeSession?.answer || null}
-          viewMode={viewMode}
-          clusteringMode={clusteringMode}
-          onNodeClick={setSelectedNode}
-          onNodeHover={() => {}}
-        />
+        {/* 3D Globe Canvas - Takes full space */}
+        <div className="absolute inset-0 z-0">
+          <ThinkingGlobe
+            nodes={activeSession?.nodes || []}
+            connections={activeSession?.connections || []}
+            answerCore={activeSession?.answer || null}
+            viewMode={viewMode}
+            clusteringMode={clusteringMode}
+            onNodeClick={setSelectedNode}
+            onNodeHover={() => {}}
+          />
+        </div>
 
-        {/* Controls Panel */}
+        {/* UI Overlays */}
         <ControlsPanel
           clusteringMode={clusteringMode}
           onClusteringModeChange={setClusteringMode}
         />
 
-        {/* Input Bar */}
         <InputBar
           onSubmit={handleSubmitQuestion}
           isGenerating={activeSession?.answer.isGenerating || false}
         />
 
-        {/* Node Detail Panel */}
         <NodeDetailPanel node={selectedNode} onClose={() => setSelectedNode(null)} />
       </div>
     </div>

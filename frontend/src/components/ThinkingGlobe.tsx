@@ -24,7 +24,7 @@ export function ThinkingGlobe({
   onNodeHover,
 }: ThinkingGlobeProps) {
   return (
-    <div className="absolute inset-0 pointer-events-none">
+    <div className="w-full h-full pointer-events-none">
       <Canvas
         camera={{ position: [0, 0, 15], fov: 50 }}
         gl={{ antialias: true, alpha: true }}
