@@ -37,6 +37,13 @@ body {
   .glow-text {
     text-shadow: 0 0 20px currentColor;
   }
+
+  .text-gradient-cyan-purple {
+    background: linear-gradient(135deg, #00d4ff 0%, #a855f7 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 }
 
 /* Custom scrollbar */
